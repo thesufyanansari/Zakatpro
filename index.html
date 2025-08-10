@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zakat Pro - Global Zakat Calculator</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Naskh+Arabic:wght@400;700&family=Noto+Sans:wght@400;700&family=Teko:wght@400;700&display=swap');
+
+        :root {
+            --primary-color: #006400; /* Dark Green */
+            --secondary-color: #B8860B; /* Dark Goldenrod */
+            --light-color: #F5F5F5;
+            --dark-color: #333333;
+            --font-sans: 'Noto Sans', sans-serif;
+            --font-arabic: 'Noto Naskh Arabic', serif;
+            --font-display: 'Teko', sans-serif;
+        }
+
+        body {
+            font-family: var(--font-sans);
+            background-color: var(--light-color);
+            color: var(--dark-color);
+        }
+
+        /* --- Landing Page --- */
+        #landing-page {
+            height: 100vh;
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1618335438234-e9f45a3d3c7c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w9NTY4fDB8MXxjb2xsZWN0aW9ufDEyfDEwNjU5fHxlbnwwfHx8fDE3MjI4NTk0Njd8&ixlib=rb-4.0.3&q=80&w=1080') no-repeat center center;
+            background-size: cover;
+            color: white;
+            display: flex;
+            align-items: center;
+            text-align: center;
+        }
+        
+        #landing-page h1 {
+            font-family: var(--font-display);
+            font-size: 5rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+        }
+
+        #landing-page .lead {
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-start {
+            font-size: 1.2rem;
+            padding: 12px 30px;
+            background-color: var(--secondary-color);
+            border: none;
+            transition: all 0.3s ease;
+        }
+
+        .btn-start:hover {
+            background-color: #FFFFFF;
+            color: var(--primary-color);
+            transform: scale(1.05);
+        }
+
+        /* --- Main App --- */
+        #main-app {
+            display: none; /* Hidden by default */
+            padding-top: 2rem;
+        }
+        
+        .header {
+            background-color: #ffffff;
+            padding: 1rem 0;
+            border-bottom: 2px solid var(--primary-color);
+        }
+        
+        .navbar-brand {
+            font-family: var(--font-display);
+            font-size: 2.5rem;
+            color: var(--primary-color) !important;
+        }
+
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 15px;
+            box-shadow: 0 6px 12px rgba(0,0,0,0.08);
+        }
+        
+        .form-label .bi-info-circle {
+            color: var(--secondary-color);
+            cursor: pointer;
+        }
+
+        .btn-calculate {
+            background: linear-gradient(45deg, var(--primary-color), #008000);
+            border: none;
+            font-size: 1.2rem;
+            padding: 10px 30px;
+            color: white;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        
+        .btn-calculate:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(0, 100, 0, 0.4);
+        }
+
+        #results-section {
+            background: linear-gradient(135deg, #ffffff, #f1f8f1);
+            border-radius: 15px;
+            padding: 2.5rem;
+            margin-top: 2rem;
+            text-align: center;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        #total-zakat {
+            font-family: var(--font-display);
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .footer {
+            background-color: var(--dark-color);
+            color: var(--light-color);
+            padding: 3rem 0;
+            margin-top: 3rem;
+        }
+        
+        html[dir="rtl"] body { font-family: var(--font-arabic); }
+        html[dir="rtl"] #landing-page h1 { font-family: var(--font-arabic); font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <!-- Landing Page Section -->
+    <section id="landing-page">
+        <div class="container">
+            <h1 data-translate="landing_title">Zakat Pro</h1>
+            <p class="lead" data-translate="landing_subtitle">Your modern, multi-currency guide to calculating Zakat with confidence and ease.</p>
+            <button class="btn btn-lg btn-start text-white" id="start-btn" data-translate="start_button">Start Calculating</button>
+        </div>
+    </section>
+
+    <!-- Main Calculator App -->
+    <div id="main-app">
+        <header class="header sticky-top">
+            <div class="container d-flex justify-content-between align-items-center">
+                <a href="#" class="navbar-brand" data-translate="app_name">Zakat Pro</a>
+                <div class="d-flex gap-2">
+                    <div class="dropdown"><button class="btn btn-outline-success dropdown-toggle" type="button" id="currency-selector-btn" data-bs-toggle="dropdown" aria-expanded="false">USD</button><ul class="dropdown-menu" id="currency-menu"></ul></div>
+                    <div class="dropdown"><button class="btn btn-outline-success dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-translate"></i></button><ul class="dropdown-menu" id="language-menu"><li><a class="dropdown-item" href="#" data-lang="en">English</a></li><li><a class="dropdown-item" href="#" data-lang="ar">العربية</a></li><li><a class="dropdown-item" href="#" data-lang="ur">اردو</a></li><li><a class="dropdown-item" href="#" data-lang="hi">हिन्दी</a></li></ul></div>
+                </div>
+            </div>
+        </header>
+
+        <main class="container mt-4">
+            <section id="intro" class="mb-5 text-center">
+                <p class="lead" data-translate="intro_p1">Calculate 2.5% of your wealth above the Nisab to purify your assets and support those in need.</p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    <div class="card p-3"><strong><span data-translate="gold_nisab_label">Gold Nisab</span> (85g)</strong>: <span id="gold-nisab-value">Loading...</span></div>
+                    <div class="card p-3"><strong><span data-translate="silver_nisab_label">Silver Nisab</span> (595g)</strong>: <span id="silver-nisab-value">Loading...</span></div>
+                </div>
+                <small id="rate-update-time" class="d-block mt-2 text-muted"></small>
+            </section>
+
+            <section id="calculator">
+                <div class="card p-4 p-md-5">
+                    <form id="zakat-form">
+                        <!-- Settings and Rates -->
+                        <div class="row g-4 mb-4">
+                            <div class="col-md-6">
+                                <label for="nisab-choice" class="form-label fw-bold" data-translate="nisab_choice_label">Nisab Threshold</label>
+                                <select id="nisab-choice" class="form-select"><option value="gold" data-translate="nisab_choice_gold">Use Gold Nisab</option><option value="silver" data-translate="nisab_choice_silver">Use Silver Nisab</option></select>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="gold-rate-input" class="form-label fw-bold" data-translate="gold_rate_label">Gold Rate/gram</label>
+                                <input type="number" step="0.01" class="form-control" id="gold-rate-input">
+                            </div>
+                            <div class="col-md-3">
+                                <label for="silver-rate-input" class="form-label fw-bold" data-translate="silver_rate_label">Silver Rate/gram</label>
+                                <input type="number" step="0.01" class="form-control" id="silver-rate-input">
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <!-- Assets and Liabilities -->
+                        <div class="row g-5">
+                            <!-- Assets Column -->
+                            <div class="col-lg-6">
+                                <h4 class="mb-3" data-translate="assets_title">Assets</h4>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="cash" placeholder="Cash & Bank Balances"></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="shares" placeholder="Stocks & Shares Value"></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="funds" placeholder="Managed Investment Funds"></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="inventory" placeholder="Business Inventory"></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="rentalIncome" placeholder="Saved Rental Income"> <i class="bi bi-info-circle ms-2 align-self-center" data-bs-toggle="tooltip" title="Include net rental income that you have saved for one lunar year."></i></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="receivables" placeholder="Loans Given to Others"></div>
+                                <div class="input-group mb-3"><span class="input-group-text">g</span><input type="number" class="form-control" id="gold" placeholder="Gold (in grams)"></div>
+                                <div class="input-group mb-3"><span class="input-group-text">g</span><input type="number" class="form-control" id="silver" placeholder="Silver (in grams)"></div>
+                            </div>
+                            <!-- Liabilities Column -->
+                            <div class="col-lg-6">
+                                <h4 class="mb-3" data-translate="liabilities_title">Liabilities (Deductible)</h4>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="debts" placeholder="Short-Term Debts"> <i class="bi bi-info-circle ms-2 align-self-center" data-bs-toggle="tooltip" title="Debts you intend to pay back within a year."></i></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="bills" placeholder="Immediate Bills Due"></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="taxes" placeholder="Taxes Owed"></div>
+                                <div class="input-group mb-3"><span class="input-group-text currency-symbol"></span><input type="number" class="form-control" id="installments" placeholder="Installments Due This Year"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-center mt-4"><button type="submit" class="btn btn-calculate btn-lg" data-translate="calculate_btn">Calculate Zakat</button></div>
+                    </form>
+                </div>
+            </section>
+
+            <section id="results-section" style="display: none;">
+                <h3 data-translate="zakat_due_title">Total Zakat Due</h3><p id="total-zakat">0.00</p>
+                <div id="breakdown-details" class="mb-3"></div>
+                <div id="exchange-rate-converter" class="mt-4"><label for="convert-currency" class="form-label" data-translate="convert_label">See amount in another currency:</label><div class="d-flex justify-content-center gap-2"><select id="convert-currency" class="form-select w-auto"></select><span id="converted-amount" class="fs-5 fw-bold align-self-center"></span></div></div>
+            </section>
+        </main>
+        
+        <footer class="footer"><div class="container text-center"><h5 data-translate="footer_title1">Give with Purpose</h5><p data-translate="footer_p1">Donate through trusted organizations to ensure your Zakat reaches those in need.</p><p>© <span id="current-year"></span> Zakat Pro. <span data-translate="footer_disclaimer">For guidance only. Consult a scholar for specific inquiries.</span></p></div></footer>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            // --- CONFIGURATION ---
+            const API_URL = 'https://api.exchangerate-api.com/v4/latest/USD';
+            // Base prices in USD. These are FALLBACKS and will be populated in the editable fields for the user.
+            const BASE_GOLD_GRAM_USD = 74.65;
+            const BASE_SILVER_GRAM_USD = 0.95;
+            const NISAB_GOLD_GRAMS = 85;
+            const NISAB_SILVER_GRAMS = 595;
+
+            const currencies = {"USD": { symbol: "$", name: "US Dollar" },"GBP": { symbol: "£", name: "British Pound" },"EUR": { symbol: "€", name: "Euro" },"PKR": { symbol: "Rs", name: "Pakistani Rupee" },"INR": { symbol: "₹", name: "Indian Rupee" },"SAR": { symbol: "ر.س", name: "Saudi Riyal" },"AED": { symbol: "د.إ", name: "UAE Dirham" },"OMR": { symbol: "ر.ع.", name: "Omani Rial" },"BHD": { symbol: ".د.ب", name: "Bahraini Dinar" },"QAR": { symbol: "ر.ق", name: "Qatari Riyal" },"KWD": { symbol: "د.ك", name: "Kuwaiti Dinar" }};
+            const translations = {
+                en: { landing_title: "Zakat Pro", landing_subtitle: "Your modern, multi-currency guide to calculating Zakat with confidence and ease.", start_button: "Start Calculating", app_name: "Zakat Pro", intro_p1: "Calculate 2.5% of your wealth above the Nisab to purify your assets and support those in need.", gold_nisab_label: "Gold Nisab", silver_nisab_label: "Silver Nisab", nisab_choice_label: "Nisab Threshold", nisab_choice_gold: "Use Gold Nisab", nisab_choice_silver: "Use Silver Nisab", gold_rate_label: "Gold Rate/gram", silver_rate_label: "Silver Rate/gram", assets_title: "Assets", liabilities_title: "Liabilities (Deductible)", calculate_btn: "Calculate Zakat", zakat_due_title: "Total Zakat Due", convert_label: "See amount in another currency:", footer_title1: "Give with Purpose", footer_p1: "Donate through trusted organizations to ensure your Zakat reaches those in need.", footer_disclaimer: "For guidance only. Consult a scholar for specific inquiries." },
+                ar: { landing_title: "زكاة برو", landing_subtitle: "دليلك العصري متعدد العملات لحساب الزكاة بثقة وسهولة.", start_button: "ابدأ الحساب", app_name: "زكاة برو", intro_p1: "احسب 2.5% من ثروتك التي تتجاوز النصاب لتطهير أموالك ودعم المحتاجين.", gold_nisab_label: "نصاب الذهب", silver_nisab_label: "نصاب الفضة", nisab_choice_label: "اختر أساس النصاب", nisab_choice_gold: "استخدام نصاب الذهب", nisab_choice_silver: "استخدام نصاب الفضة", gold_rate_label: "سعر الذهب/جرام", silver_rate_label: "سعر الفضة/جرام", assets_title: "الأصول", liabilities_title: "الخصوم (القابلة للخصم)", calculate_btn: "احسب الزكاة", zakat_due_title: "إجمالي الزكاة المستحقة", convert_label: "شاهد المبلغ بعملة أخرى:", footer_title1: "أعطِ بهدف", footer_p1: "تبرع من خلال منظمات موثوقة لضمان وصول زكاتك إلى المحتاجين.", footer_disclaimer: "هذه الأداة إرشادية فقط. استشر عالماً دينياً للاستفسارات المحددة." },
+                ur: { landing_title: "زکوٰۃ پرو", landing_subtitle: "اعتماد اور آسانی کے ساتھ زکوٰۃ کا حساب لگانے کے لیے آپ کا جدید، کثیر کرنسی گائیڈ۔", start_button: "حساب شروع کریں", app_name: "زکوٰۃ پرو", intro_p1: "اپنے اثاثوں کو پاک کرنے اور ضرورت مندوں کی مدد کے لیے نصاب سے زیادہ اپنی دولت کا 2.5% حساب کریں۔", gold_nisab_label: "سونے کا نصاب", silver_nisab_label: "چاندی کا نصاب", nisab_choice_label: "نصاب کا انتخاب کریں", nisab_choice_gold: "سونے کا نصاب استعمال کریں", nisab_choice_silver: "چاندی کا نصاب استعمال کریں", gold_rate_label: "سونے کی قیمت/گرام", silver_rate_label: "چاندی کی قیمت/گرام", assets_title: "اثاثے", liabilities_title: "واجبات (قابل کٹوتی)", calculate_btn: "زکوٰۃ کا حساب لگائیں", zakat_due_title: "کل قابل ادائیگی زکوٰۃ", convert_label: "رقم کو دوسری کرنسی میں دیکھیں:", footer_title1: "مقصد کے ساتھ دیں", footer_p1: "مستحقین تک اپنی زکوٰۃ پہنچانے کے لیے معتبر تنظیموں کے ذریعے عطیہ کریں۔", footer_disclaimer: "یہ ٹول صرف رہنمائی کے لیے ہے۔ مخصوص پوچھ گچھ کے لیے کسی عالم سے رجوع کریں۔" },
+                hi: { landing_title: "ज़कात प्रो", landing_subtitle: "आत्मविश्वास और आसानी से ज़कात की गणना के लिए आपका आधुनिक, बहु-मुद्रा गाइड।", start_button: "गणना शुरू करें", app_name: "ज़कात प्रो", intro_p1: "अपनी संपत्ति को शुद्ध करने और जरूरतमंदों की सहायता के लिए निसाब से अधिक अपनी संपत्ति का 2.5% गणना करें।", gold_nisab_label: "सोने का निसाब", silver_nisab_label: "चांदी का निसाब", nisab_choice_label: "निसाब की सीमा चुनें", nisab_choice_gold: "सोने का निसाब उपयोग करें", nisab_choice_silver: "चांदी का निसाब उपयोग करें", gold_rate_label: "सोने की दर/ग्राम", silver_rate_label: "चांदी की दर/ग्राम", assets_title: "संपत्ति", liabilities_title: "देनदारियां (कटौती योग्य)", calculate_btn: "ज़कात की गणना करें", zakat_due_title: "कुल देय ज़कात", convert_label: "राशि को दूसरी मुद्रा में देखें:", footer_title1: "उद्देश्य के साथ दें", footer_p1: "यह सुनिश्चित करने के लिए कि आपकी ज़कात जरूरतमंदों तक पहुंचे, विश्वसनीय संगठनों के माध्यम से दान करें।", footer_disclaimer: "यह उपकरण केवल मार्गदर्शन के लिए है। विशिष्ट पूछताछ के लिए किसी विद्वान से परामर्श करें।" }
+            };
+
+            let state = { currentLang: 'en', currentCurrency: 'USD', exchangeRates: null, totalZakat: 0 };
+
+            const DOMElements = {
+                landingPage: document.getElementById('landing-page'), mainApp: document.getElementById('main-app'), startBtn: document.getElementById('start-btn'),
+                currencyMenu: document.getElementById('currency-menu'), languageMenu: document.getElementById('language-menu'), currencyBtn: document.getElementById('currency-selector-btn'),
+                form: document.getElementById('zakat-form'), resultsSection: document.getElementById('results-section'), goldNisabElem: document.getElementById('gold-nisab-value'),
+                silverNisabElem: document.getElementById('silver-nisab-value'), totalZakatElem: document.getElementById('total-zakat'), breakdownElem: document.getElementById('breakdown-details'),
+                convertCurrencySelect: document.getElementById('convert-currency'), convertedAmountElem: document.getElementById('converted-amount'),
+                rateUpdateTimeElem: document.getElementById('rate-update-time'), goldRateInput: document.getElementById('gold-rate-input'), silverRateInput: document.getElementById('silver-rate-input')
+            };
+
+            function init() {
+                DOMElements.startBtn.addEventListener('click', () => { DOMElements.landingPage.style.display = 'none'; DOMElements.mainApp.style.display = 'block'; });
+                populateCurrencySelectors();
+                DOMElements.languageMenu.addEventListener('click', e => { e.preventDefault(); if (e.target.dataset.lang) setLanguage(e.target.dataset.lang); });
+                DOMElements.currencyMenu.addEventListener('click', e => { e.preventDefault(); if (e.target.dataset.currency) setCurrency(e.target.dataset.currency); });
+                DOMElements.convertCurrencySelect.addEventListener('change', displayConvertedAmount);
+                DOMElements.form.addEventListener('submit', e => { e.preventDefault(); calculateZakat(); });
+                [DOMElements.goldRateInput, DOMElements.silverRateInput, DOMElements.form.querySelector('#nisab-choice')].forEach(el => {
+                    el.addEventListener('input', updateNisabValues);
+                });
+                document.getElementById('current-year').textContent = new Date().getFullYear();
+                const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                tooltipTriggerList.map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+                fetchExchangeRates();
+                setLanguage(state.currentLang);
+            }
+
+            async function fetchExchangeRates() {
+                try {
+                    const response = await fetch(API_URL);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    state.exchangeRates = data.rates;
+                    DOMElements.rateUpdateTimeElem.textContent = `Live rates updated: ${new Date(data.time_last_update_utc).toLocaleString()}`;
+                    setCurrency(state.currentCurrency); // Call setCurrency to populate rates
+                } catch (error) {
+                    console.error("Failed to fetch exchange rates:", error);
+                    alert('Could not fetch latest exchange rates. Using default values.');
+                    // Populate with default USD values if API fails
+                    state.exchangeRates = { "USD": 1.0 };
+                    setCurrency("USD");
+                }
+            }
+
+            function populateCurrencySelectors() {
+                DOMElements.currencyMenu.innerHTML = Object.keys(currencies).map(c => `<li><a class="dropdown-item" href="#" data-currency="${c}">${c} - ${currencies[c].name}</a></li>`).join('');
+                DOMElements.convertCurrencySelect.innerHTML = Object.keys(currencies).map(c => `<option value="${c}">${c}</option>`).join('');
+            }
+
+            function setLanguage(lang) {
+                state.currentLang = lang;
+                document.documentElement.lang = lang;
+                document.documentElement.dir = (lang === 'ar' || lang === 'ur') ? 'rtl' : 'ltr';
+                document.querySelectorAll('[data-translate]').forEach(el => {
+                    const key = el.getAttribute('data-translate');
+                    if (translations[lang] && translations[lang][key]) el.textContent = translations[lang][key];
+                });
+            }
+
+            function setCurrency(currencyCode) {
+                state.currentCurrency = currencyCode;
+                DOMElements.currencyBtn.textContent = currencyCode;
+                DOMElements.convertCurrencySelect.value = currencyCode;
+                document.querySelectorAll('.currency-symbol').forEach(s => s.textContent = currencies[currencyCode].symbol);
+                if (state.exchangeRates) {
+                    const rate = state.exchangeRates[currencyCode];
+                    DOMElements.goldRateInput.value = (BASE_GOLD_GRAM_USD * rate).toFixed(2);
+                    DOMElements.silverRateInput.value = (BASE_SILVER_GRAM_USD * rate).toFixed(2);
+                }
+                updateNisabValues();
+                DOMElements.resultsSection.style.display = 'none';
+            }
+
+            function formatCurrency(amount, currencyCode) {
+                return new Intl.NumberFormat(state.currentLang.startsWith('ur') ? 'en' : state.currentLang, { style: 'currency', currency: currencyCode, maximumFractionDigits: 2 }).format(amount);
+            }
+
+            function getNumericValue(id) { return parseFloat(document.getElementById(id).value) || 0; }
+            
+            function updateNisabValues() {
+                const goldRate = getNumericValue('gold-rate-input');
+                const silverRate = getNumericValue('silver-rate-input');
+                const nisabGoldValue = goldRate * NISAB_GOLD_GRAMS;
+                const nisabSilverValue = silverRate * NISAB_SILVER_GRAMS;
+                DOMElements.goldNisabElem.textContent = formatCurrency(nisabGoldValue, state.currentCurrency);
+                DOMElements.silverNisabElem.textContent = formatCurrency(nisabSilverValue, state.currentCurrency);
+            }
+
+            function calculateZakat() {
+                const goldRate = getNumericValue('gold-rate-input');
+                const silverRate = getNumericValue('silver-rate-input');
+                const goldValue = getNumericValue('gold') * goldRate;
+                const silverValue = getNumericValue('silver') * silverRate;
+                const totalAssets = getNumericValue('cash') + getNumericValue('shares') + getNumericValue('funds') + getNumericValue('inventory') + getNumericValue('rentalIncome') + getNumericValue('receivables') + goldValue + silverValue;
+                const totalLiabilities = getNumericValue('debts') + getNumericValue('bills') + getNumericValue('taxes') + getNumericValue('installments');
+                const zakatableWealth = totalAssets - totalLiabilities;
+                const nisabChoice = DOMElements.form.querySelector('#nisab-choice').value;
+                const nisabValue = nisabChoice === 'gold' ? (goldRate * NISAB_GOLD_GRAMS) : (silverRate * NISAB_SILVER_GRAMS);
+                state.totalZakat = (zakatableWealth >= nisabValue) ? zakatableWealth * 0.025 : 0;
+                displayResults(totalAssets, totalLiabilities, zakatableWealth, nisabValue, state.totalZakat);
+            }
+
+            function displayResults(assets, debts, zakatable, nisab, zakat) {
+                DOMElements.totalZakatElem.textContent = formatCurrency(zakat, state.currentCurrency);
+                let breakdownHTML = `<p>Total Assets: ${formatCurrency(assets, state.currentCurrency)}</p><p>Total Liabilities: ${formatCurrency(debts, state.currentCurrency)}</p><p class="fw-bold">Net Zakatable Wealth: ${formatCurrency(zakatable, state.currentCurrency)}</p><hr class="my-2"><p>Chosen Nisab: ${formatCurrency(nisab, state.currentCurrency)}</p>`;
+                if (zakatable < nisab) breakdownHTML += `<p class="text-success fw-bold mt-2">Your wealth is below the Nisab. No Zakat is due.</p>`;
+                DOMElements.breakdownElem.innerHTML = breakdownHTML;
+                DOMElements.resultsSection.style.display = 'block';
+                displayConvertedAmount();
+                DOMElements.resultsSection.scrollIntoView({ behavior: 'smooth' });
+            }
+
+            function displayConvertedAmount() {
+                const targetCurrency = DOMElements.convertCurrencySelect.value;
+                const zakatInUSD = state.totalZakat / (state.exchangeRates[state.currentCurrency] || 1);
+                const converted = zakatInUSD * (state.exchangeRates[targetCurrency] || 0);
+                DOMElements.convertedAmountElem.textContent = formatCurrency(converted, targetCurrency);
+            }
+
+            init();
+        });
+    </script>
+</body>
+</html>
+
